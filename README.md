@@ -4,8 +4,6 @@ App desarrollada como ejercicio de angular. <br>
 Desarrollada en Angular, con Bootstrap, Angular Material y Chartjs. <br>
 Esta es app consiste en un sistema de encuestas para medir el nivel de satisfacción de un usuario con respecto a un producto o servicio. <br>
 
-[Demo de Aplicación](https://marco90v.github.io/appEncuestas/) <br>
-
 ### Funcionamiento
 
 #### Inicio
