@@ -23,6 +23,22 @@ class EncuestaModel {
     );
     return encuesta[0];
   }
+
+  static async actualizar(id, nombre) {
+    await db.execute(
+      'UPDATE encuestas SET nombre = ? WHERE id = ?',
+      [nombre, id]
+    );
+    return { id, nombre };
+  }
+
+  static async eliminar(id) {
+    await db.execute(
+      'DELETE FROM encuestas WHERE id = ?',
+      [id]
+    );
+    return true;
+  }
 }
 
 module.exports = EncuestaModel;

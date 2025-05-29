@@ -35,18 +35,24 @@ export class NuevaComponent implements OnInit {
     }));
   }
 
-  save(){
-    if (this.formAnswers.invalid !== true){
-      const res = this.action.setStorage(this.formAnswers.value);
-      if(res){
-        this.dateSave = true;
-        this.formAnswers.reset();
-        this.preguntas.clear();
-        setTimeout(() => {this.dateSave = false; }, 5000);
-      }
-    }else{
+  save() {
+    if (this.formAnswers.invalid !== true) {
+      this.action.setStorage(this.formAnswers.value).subscribe(
+        res => {
+          this.dateSave = true;
+          this.formAnswers.reset();
+          this.preguntas.clear();
+          setTimeout(() => { this.dateSave = false; }, 5000);
+        },
+        error => {
+          console.error('Error al guardar:', error);
+          this.validated = true;
+          setTimeout(() => { this.validated = false; }, 5000);
+        }
+      );
+    } else {
       this.validated = true;
-      setTimeout(() => {this.validated = false; }, 5000);
+      setTimeout(() => { this.validated = false; }, 5000);
     }
   }
 

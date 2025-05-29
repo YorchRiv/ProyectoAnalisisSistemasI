@@ -10,15 +10,20 @@ import { ResultComponent } from './components/result/result.component';
 
 
 const routes: Routes = [
-  {path: '', component: EncuestasComponent},
-  {path: 'encuesta/:ID', component: EncuestaComponent},
-  {path: 'dashboard', component: DashboardComponent, children: [
-    {path: 'new', component: NuevaComponent},
-    {path: 'list', component: ListComponent},
-    {path: 'edit/:ID', component: EditComponent},
-    {path: 'result/:ID', component: ResultComponent},
-    {path: '', redirectTo: 'list', pathMatch: 'full'}
-  ]}
+  { path: '', component: EncuestasComponent },
+  { path: 'encuesta/:ID', component: EncuestaComponent },
+  { 
+    path: 'dashboard', 
+    component: DashboardComponent,
+    children: [
+      { path: '', redirectTo: 'list', pathMatch: 'full' },
+      { path: 'list', component: ListComponent },
+      { path: 'new', component: NuevaComponent },
+      { path: 'edit/:ID', component: EditComponent },
+      { path: 'result/:ID', component: ResultComponent }
+    ]
+  },
+  { path: '**', redirectTo: '' }
 ];
 
 @NgModule({

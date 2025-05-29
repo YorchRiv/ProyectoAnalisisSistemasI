@@ -35,6 +35,39 @@ class EncuestaController {
       res.status(500).json({ error: error.message });
     }
   }
+
+  static async actualizar(req, res) {
+    try {
+      const { nombre, preguntas } = req.body;
+      const id = req.params.id;
+      
+      // Actualizar la encuesta
+      await EncuestaModel.actualizar(id, nombre);
+      
+      // Eliminar preguntas anteriores
+      await PreguntaModel.eliminarPorEncuesta(id);
+      
+      // Crear nuevas preguntas
+      for (const pregunta of preguntas) {
+        await PreguntaModel.crear(id, pregunta.texto, pregunta.tipo);
+      }
+      
+      res.json({ id, mensaje: 'Encuesta actualizada correctamente' });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  static async eliminar(req, res) {
+    try {
+      const id = req.params.id;
+      await PreguntaModel.eliminarPorEncuesta(id);
+      await EncuestaModel.eliminar(id);
+      res.json({ mensaje: 'Encuesta eliminada correctamente' });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 }
 
 module.exports = EncuestaController;

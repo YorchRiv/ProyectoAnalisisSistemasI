@@ -16,6 +16,14 @@ class PreguntaModel {
     );
     return preguntas;
   }
+
+  static async eliminarPorEncuesta(encuestaId) {
+    await db.execute(
+      'DELETE FROM preguntas WHERE encuesta_id = ?',
+      [encuestaId]
+    );
+    return true;
+  }
 }
 
 module.exports = PreguntaModel;

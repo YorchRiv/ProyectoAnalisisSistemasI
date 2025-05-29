@@ -6,6 +6,8 @@ const RespuestaModel = require('../models/respuesta.model');
 router.post('/encuestas', EncuestaController.crear);
 router.get('/encuestas', EncuestaController.obtenerTodas);
 router.get('/encuestas/:id', EncuestaController.obtenerPorId);
+router.put('/encuestas/:id', EncuestaController.actualizar);
+router.delete('/encuestas/:id', EncuestaController.eliminar);
 
 router.post('/encuestas/:id/respuestas', async (req, res) => {
   try {
