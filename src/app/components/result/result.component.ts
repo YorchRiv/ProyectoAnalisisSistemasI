@@ -21,8 +21,30 @@ export class ResultComponent implements OnInit, AfterViewInit {
 
   constructor(private action: ActionsService, private ruta: ActivatedRoute) {
     this.ID = ruta.snapshot.params.ID;
-    this.preguntas = action.getEncuestas(this.ID)[0];
-    this.respuestas = action.getRespuestas(this.ID);
+    this.cargarDatos();
+  }
+
+  cargarDatos() {
+    this.action.getEncuestas(this.ID).subscribe(
+      data => {
+        this.preguntas = data;
+        this.cargarRespuestas();
+      },
+      error => console.error('Error al cargar encuesta:', error)
+    );
+  }
+
+  cargarRespuestas() {
+    this.action.getRespuestas(this.ID).subscribe(
+      data => {
+        this.respuestas = data;
+        // Volver a renderizar los gráficos cuando tengamos los datos
+        if (this.ctx) {
+          this.renderizarGraficos();
+        }
+      },
+      error => console.error('Error al cargar respuestas:', error)
+    );
   }
 
   tipoRes(tipo: string): Array<string>{
@@ -40,7 +62,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     return res;
   }
 
-  ngAfterViewInit(){
+  renderizarGraficos() {
     this.ctx.forEach((e, i) => {
       this.myChart = new Chart(e.nativeElement.getContext('2d'), {
       type: 'bar',
@@ -94,6 +116,12 @@ export class ResultComponent implements OnInit, AfterViewInit {
 
 
     });
+  }
+
+  ngAfterViewInit() {
+    if (this.preguntas && this.respuestas) {
+      this.renderizarGraficos();
+    }
   }
 
 

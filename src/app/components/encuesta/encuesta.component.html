@@ -1,6 +1,6 @@
 <div class="container contaEncuesta">
     <div class="nameEncuesta">
-        {{encuesta?.nameAnswer}}
+          {{encuesta?.nameAnswer}}
     </div>
     <div class="cantidadPreguntas" *ngIf="encuesta">
         {{contador}} de {{encuesta.preguntas.length}}
@@ -9,10 +9,10 @@
         <div class="pregunta">{{pregunta.pregunta}}</div>
         <div class="respuesta">
             <mat-radio-group [(ngModel)]="respuesta">
-                <div [ngSwitch]="pregunta?.tipo">
+                <div [ngSwitch]="pregunta.tipo">
                     <ng-container *ngSwitchCase="'0'">
-                        <mat-radio-button class="radio-option" value="0">No</mat-radio-button>
-                        <mat-radio-button class="radio-option" value="1">Si</mat-radio-button>
+                        <mat-radio-button value="0">No</mat-radio-button>
+                        <mat-radio-button value="1">Si</mat-radio-button>
                     </ng-container>
                     <ng-container *ngSwitchCase="'1'">
                         <mat-radio-button *ngFor="let n of [0,1,2,3,4]" [value]="n">
@@ -28,5 +28,3 @@
             </mat-radio-group>
         </div>
         <button mat-raised-button color="primary" (click)="save()" [disabled]="respuesta === null">Guardar</button>
-    </div>
-</div>

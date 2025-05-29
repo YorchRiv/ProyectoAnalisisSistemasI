@@ -18,6 +18,7 @@ router.post('/encuestas/:id/respuestas', async (req, res) => {
   }
 });
 
+
 router.get('/encuestas/:id/respuestas', async (req, res) => {
   try {
     const respuestas = await RespuestaModel.obtenerPorEncuesta(req.params.id);

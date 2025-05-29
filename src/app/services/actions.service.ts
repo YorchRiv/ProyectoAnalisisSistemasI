@@ -18,7 +18,16 @@ export class ActionsService {
 
   getEncuestas(id?: string): Observable<any> {
     if (id) {
-      return this.http.get(`${this.apiUrl}/encuestas/${id}`);
+      return this.http.get(`${this.apiUrl}/encuestas/${id}`).pipe(
+        map(response => ({
+          ID: response['id'],
+          nameAnswer: response['nombre'],
+          preguntas: response['preguntas'].map(p => ({
+            pregunta: p.pregunta,
+            tipo: p.tipo
+          }))
+        }))
+      );
     }
     return this.http.get<any[]>(`${this.apiUrl}/encuestas`);
   }
@@ -49,13 +58,27 @@ export class ActionsService {
   }
 
   setRespuesta(respuesta: any): Observable<any> {
+    const respuestasFormateadas = Array.isArray(respuesta.respuestas)
+      ? respuesta.respuestas
+      : [respuesta.respuestas]; // 👈 fuerza que sea un array
+
     return this.http.post(`${this.apiUrl}/encuestas/${respuesta.ID}/respuestas`, {
-      respuestas: respuesta.respuestas
+      respuestas: respuestasFormateadas
     });
   }
 
+
   getRespuestas(id: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/encuestas/${id}/respuestas`);
+    return this.http.get(`${this.apiUrl}/encuestas/${id}/respuestas`).pipe(
+      map(response => {
+        console.log('Respuesta original:', response); // Para depuración
+        return response;
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error obteniendo respuestas:', error);
+        return throwError(() => new Error('Error al obtener las respuestas de la encuesta'));
+      })
+    );
   }
 
   deleted(id: string): Observable<any> {
