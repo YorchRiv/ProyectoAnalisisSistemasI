@@ -16,6 +16,14 @@ class RespuestaModel {
     );
     return respuestas.map(r => ({...r, respuestas: JSON.parse(r.respuestas)}));
   }
+
+  static async eliminarPorEncuesta(encuestaId) {
+    await db.execute(
+      'DELETE FROM respuestas WHERE encuesta_id = ?',
+      [encuestaId]
+    );
+    return true;
+  }
 }
 
 module.exports = RespuestaModel;

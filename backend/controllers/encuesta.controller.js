@@ -1,5 +1,6 @@
 const EncuestaModel = require('../models/encuesta.model');
 const PreguntaModel = require('../models/pregunta.model');
+const RespuestaModel = require('../models/respuesta.model');
 
 class EncuestaController {
   static async crear(req, res) {
@@ -61,11 +62,18 @@ class EncuestaController {
   static async eliminar(req, res) {
     try {
       const id = req.params.id;
+      
+      // Primero eliminar las respuestas asociadas
+      await RespuestaModel.eliminarPorEncuesta(id);
+      // Luego eliminar las preguntas
       await PreguntaModel.eliminarPorEncuesta(id);
+      // Finalmente eliminar la encuesta
       await EncuestaModel.eliminar(id);
+      
       res.json({ mensaje: 'Encuesta eliminada correctamente' });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.error('Error al eliminar:', error);
+      res.status(500).json({ error: 'Error al eliminar la encuesta' });
     }
   }
 }

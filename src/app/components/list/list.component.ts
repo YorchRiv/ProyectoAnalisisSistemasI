@@ -18,11 +18,13 @@ export class ListComponent implements OnInit {
   loadEncuestas() {
     this.action.getEncuestas().subscribe(
       (data: any[]) => {
-        this.encuestas = data;
+        this.encuestas = data.map(encuesta => ({
+          ID: encuesta.id,
+          nameAnswer: encuesta.nombre,
+          preguntas: encuesta.preguntas || []
+        }));
       },
-      error => {
-        console.error('Error loading encuestas:', error);
-      }
+      error => console.error('Error cargando encuestas:', error)
     );
   }
 
@@ -35,13 +37,18 @@ export class ListComponent implements OnInit {
   }
 
   deleted(id: string) {
-    this.action.deleted(id).subscribe(
-      () => {
-        this.loadEncuestas();
-      },
-      error => {
-        console.error('Error deleting encuesta:', error);
-      }
-    );
+    if (confirm('¿Está seguro que desea eliminar esta encuesta?')) {
+      this.action.deleted(id).subscribe({
+        next: () => {
+          console.log('Encuesta eliminada exitosamente');
+          // Filtrar la encuesta eliminada del array local
+          this.encuestas = this.encuestas.filter(e => e.ID !== id);
+        },
+        error: (error) => {
+          console.error('Error al eliminar:', error);
+          alert(error.message || 'Error al eliminar la encuesta');
+        }
+      });
+    }
   }
 }

@@ -26,22 +26,26 @@ export class EncuestaComponent implements OnInit {
         this.encuesta = {
           nameAnswer: data.nombre,
           preguntas: data.preguntas.map(p => ({
-            pregunta: p.texto,
-            tipo: p.tipo
+            pregunta: p.pregunta,
+            tipo: p.tipo.toString() // Asegurar que el tipo sea string
           }))
         };
         if (this.encuesta.preguntas.length > 0) {
           this.pregunta = this.encuesta.preguntas[this.contador];
           this.contador++;
         }
+        console.log('Pregunta actual:', this.pregunta); // Para debug
       },
       error => console.error('Error:', error)
     );
   }
 
   save() {
-    this.respuestas.push(parseInt(this.respuesta));
-    this.next();
+    const value = parseInt(this.respuesta);
+    if (!isNaN(value)) {
+      this.respuestas.push(value);
+      this.next();
+    }
   }
 
   next() {

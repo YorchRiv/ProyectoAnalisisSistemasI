@@ -1,7 +1,7 @@
 import { Injectable, Output, EventEmitter } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -54,6 +54,15 @@ export class ActionsService {
   }
 
   deleted(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/encuestas/${id}`);
+    return this.http.delete(`${this.apiUrl}/encuestas/${id}`).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error en deleted:', error);
+        let errorMsg = 'Error al eliminar la encuesta';
+        if (error.error?.mensaje) {
+          errorMsg = error.error.mensaje;
+        }
+        return throwError(() => new Error(errorMsg));
+      })
+    );
   }
 }
