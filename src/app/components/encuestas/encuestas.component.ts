@@ -7,22 +7,26 @@ import { Router } from '@angular/router';
   templateUrl: './encuestas.component.html'
 })
 export class EncuestasComponent implements OnInit {
-
-  encuestas: any[];
+  encuestas: any[] = [];
 
   constructor(private action: ActionsService, private ruta: Router) { }
 
   ngOnInit(): void {
-    this.encuestas = this.action.getEncuestas();
+    this.action.getEncuestas().subscribe(
+      (data: any) => {
+        console.log('Datos recibidos:', data); // Para debug
+        this.encuestas = data;
+      },
+      error => console.error('Error:', error)
+    );
   }
 
-  iniciar(id){
+  iniciar(id: string) {
+    console.log('Iniciando encuesta:', id); // Para debug
     this.ruta.navigate(['/encuesta', id]);
   }
 
-  ingresar(){
+  ingresar() {
     this.ruta.navigate(['/dashboard/list']);
-
   }
-
 }

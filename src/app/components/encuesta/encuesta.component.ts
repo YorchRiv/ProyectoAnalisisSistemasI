@@ -20,26 +20,43 @@ export class EncuestaComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.encuesta = this.action.getEncuestas(this.ID)[0];
-    if (this.encuesta.preguntas.length > 0){
-      this.pregunta = this.encuesta.preguntas[this.contador];
-      this.contador++;
-    }
+    this.ID = this.rutaActiva.snapshot.params.ID;
+    this.action.getEncuestas(this.ID).subscribe(
+      (data: any) => {
+        this.encuesta = {
+          nameAnswer: data.nombre,
+          preguntas: data.preguntas.map(p => ({
+            pregunta: p.texto,
+            tipo: p.tipo
+          }))
+        };
+        if (this.encuesta.preguntas.length > 0) {
+          this.pregunta = this.encuesta.preguntas[this.contador];
+          this.contador++;
+        }
+      },
+      error => console.error('Error:', error)
+    );
   }
 
-  save(){
-    // tslint:disable-next-line: radix
+  save() {
     this.respuestas.push(parseInt(this.respuesta));
     this.next();
   }
 
-  next(){
-    this.pregunta = this.encuesta.preguntas[this.contador];
-    this.contador++;
-    this.respuesta = null;
-    if (this.contador > this.encuesta.preguntas.length){
-      this.action.setRespuesta({ID: this.ID, respuestas: this.respuestas});
-      this.ruta.navigate(['']);
+  next() {
+    if (this.contador < this.encuesta.preguntas.length) {
+      this.pregunta = this.encuesta.preguntas[this.contador];
+      this.contador++;
+      this.respuesta = null;
+    } else {
+      this.action.setRespuesta({
+        ID: this.ID,
+        respuestas: this.respuestas
+      }).subscribe(
+        () => this.ruta.navigate(['']),
+        error => console.error('Error al guardar respuestas:', error)
+      );
     }
   }
 
