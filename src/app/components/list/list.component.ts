@@ -21,8 +21,21 @@ export class ListComponent implements OnInit {
         this.encuestas = data.map(encuesta => ({
           ID: encuesta.id,
           nameAnswer: encuesta.nombre,
-          preguntas: encuesta.preguntas || []
+          preguntas: [] // Inicializamos vacío
         }));
+
+        // 🔁 Llamamos a getEncuestas(id) para obtener preguntas
+        this.encuestas.forEach((encuesta, index) => {
+          this.action.getEncuestas(encuesta.ID).subscribe(
+            detalle => {
+              this.encuestas[index].preguntas = detalle.preguntas || [];
+            },
+            error => {
+              console.error(`Error cargando preguntas para encuesta ${encuesta.ID}`, error);
+              this.encuestas[index].preguntas = [];
+            }
+          );
+        });
       },
       error => console.error('Error cargando encuestas:', error)
     );
@@ -41,7 +54,6 @@ export class ListComponent implements OnInit {
       this.action.deleted(id).subscribe({
         next: () => {
           console.log('Encuesta eliminada exitosamente');
-          // Filtrar la encuesta eliminada del array local
           this.encuestas = this.encuestas.filter(e => e.ID !== id);
         },
         error: (error) => {

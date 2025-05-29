@@ -9,24 +9,35 @@ import { Router } from '@angular/router';
 export class EncuestasComponent implements OnInit {
   encuestas: any[] = [];
 
-  constructor(private action: ActionsService, private ruta: Router) { }
+  constructor(private action: ActionsService, private ruta: Router) {}
 
   ngOnInit(): void {
     this.action.getEncuestas().subscribe(
-      (data: any) => {
-        console.log('Datos recibidos:', data); // Para debug
+      (data: any[]) => {
         this.encuestas = data;
+
+        // 🔁 Por cada encuesta, pedir sus preguntas
+        this.encuestas.forEach((encuesta, index) => {
+          this.action.getEncuestas(encuesta.id).subscribe(
+            detalle => {
+              this.encuestas[index].preguntas = detalle.preguntas || [];
+            },
+            error => {
+              console.error(`Error cargando preguntas para encuesta ${encuesta.id}`, error);
+              this.encuestas[index].preguntas = [];
+            }
+          );
+        });
       },
-      error => console.error('Error:', error)
+      error => console.error('Error al cargar encuestas:', error)
     );
   }
 
-  iniciar(id: string) {
-    console.log('Iniciando encuesta:', id); // Para debug
+  iniciar(id: string): void {
     this.ruta.navigate(['/encuesta', id]);
   }
 
-  ingresar() {
+  ingresar(): void {
     this.ruta.navigate(['/dashboard/list']);
   }
 }
