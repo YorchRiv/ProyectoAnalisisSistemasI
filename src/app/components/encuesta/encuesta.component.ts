@@ -11,7 +11,7 @@ export class EncuestaComponent implements OnInit {
   private ID: string;
   public encuesta: any;
   public pregunta: any;
-  public contador = 0;
+  public contador = 1; // Cambiado de 0 a 1
   public respuesta: string;
   public respuestas: number[] = []; // ✅ array tipado correctamente
 
@@ -26,17 +26,18 @@ export class EncuestaComponent implements OnInit {
   ngOnInit(): void {
     this.action.getEncuestas(this.ID).subscribe(
       (data: any) => {
+        console.log('Datos recibidos:', data);
         this.encuesta = {
-          nameAnswer: data.nombre,
+          nameAnswer: "Sistema de Encuestas",
+          titulo: data.nombre,
           preguntas: data.preguntas.map(p => ({
-            pregunta: p.texto,
-            tipo: p.tipo
+            pregunta: p.pregunta,
+            tipo: p.tipo.toString()
           }))
         };
 
-        if (this.encuesta.preguntas.length > 0) {
-          this.pregunta = this.encuesta.preguntas[this.contador];
-          this.contador++;
+        if (this.encuesta.preguntas && this.encuesta.preguntas.length > 0) {
+          this.pregunta = this.encuesta.preguntas[0]; // Siempre comenzamos con la primera pregunta
         }
       },
       error => console.error('Error:', error)
@@ -61,7 +62,7 @@ export class EncuestaComponent implements OnInit {
     } else {
       this.action.setRespuesta({
         ID: this.ID,
-        respuestas: this.respuestas // ✅ se envía array de números
+        respuestas: this.respuestas
       }).subscribe(
         () => this.ruta.navigate(['']),
         error => console.error('Error al guardar respuestas:', error)

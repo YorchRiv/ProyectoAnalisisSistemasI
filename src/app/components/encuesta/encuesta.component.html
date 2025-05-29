@@ -1,12 +1,15 @@
 <div class="container contaEncuesta">
     <div class="nameEncuesta">
-          {{encuesta?.nameAnswer}}
+        {{encuesta?.nameAnswer}}
+    </div>
+    <div class="titulo" *ngIf="encuesta?.titulo">
+        {{encuesta?.titulo}}
     </div>
     <div class="cantidadPreguntas" *ngIf="encuesta">
         {{contador}} de {{encuesta.preguntas.length}}
     </div>
     <div class="contentEncuesta" *ngIf="pregunta">
-        <div class="pregunta">{{pregunta.pregunta}}</div>
+        <div class="pregunta">{{pregunta?.pregunta}}</div>
         <div class="respuesta">
             <mat-radio-group [(ngModel)]="respuesta">
                 <div [ngSwitch]="pregunta.tipo">
@@ -28,3 +31,5 @@
             </mat-radio-group>
         </div>
         <button mat-raised-button color="primary" (click)="save()" [disabled]="respuesta === null">Guardar</button>
+    </div>
+</div>
