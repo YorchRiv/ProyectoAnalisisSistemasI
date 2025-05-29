@@ -24,24 +24,28 @@ static async obtenerPorEncuesta(encuestaId) {
   );
 
   return respuestas.map(r => {
-    let parsed;
-    try {
-      parsed = JSON.parse(r.respuestas);
-      // ✅ Si no es array, convertirlo en uno
-      if (!Array.isArray(parsed)) {
-        parsed = [parsed];
+    let data = r.respuestas;
+
+    // Si el motor devuelve como string, lo parseamos
+    if (typeof data === 'string') {
+      try {
+        data = JSON.parse(data);
+      } catch (e) {
+        data = [];
       }
-    } catch (e) {
-      parsed = [];
+    }
+
+    // Forzar que sea array
+    if (!Array.isArray(data)) {
+      data = [data];
     }
 
     return {
       ...r,
-      respuestas: parsed
+      respuestas: data
     };
   });
 }
-
   static async eliminarPorEncuesta(encuestaId) {
     await db.execute(
       'DELETE FROM respuestas WHERE encuesta_id = ?',
