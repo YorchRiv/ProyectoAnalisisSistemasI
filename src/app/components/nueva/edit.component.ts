@@ -1,4 +1,4 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { ActionsService } from 'src/app/services/actions.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -28,12 +28,24 @@ export class EditComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        const encuesta = this.action.getEncuestas(this.ID)[0];
-        this.formAnswers.setValue({nameAnswer: encuesta.nameAnswer, preguntas: []});
-        encuesta.preguntas.forEach(e => {
-            this.preguntas.push(new FormGroup({pregunta: new FormControl(e.pregunta), tipo: new FormControl(e.tipo)}));
-        });
-    }
+        this.action.getEncuestas(this.ID).subscribe(
+          (data: any) => {
+            // Establecer el nombre de la encuesta
+            this.formAnswers.patchValue({
+              nameAnswer: data.nombre
+            });
+  
+            // Cargar las preguntas
+            data.preguntas.forEach(p => {
+              this.preguntas.push(new FormGroup({
+                pregunta: new FormControl(p.pregunta, Validators.required),
+                tipo: new FormControl(p.tipo.toString(), Validators.required)
+              }));
+            });
+          },
+          error => console.error('Error cargando encuesta:', error)
+        );
+      }
 
   newAnswer(){
     this.preguntas.push(new FormGroup({
@@ -42,20 +54,26 @@ export class EditComponent implements OnInit {
     }));
   }
 
-    save(){
-        if (this.formAnswers.invalid !== true){
-            const res = this.action.updateStorage(this.formAnswers.value, this.ID);
-            if (res){
-                this.dateSave = true;
-                this.formAnswers.reset();
-                this.preguntas.clear();
-                setTimeout(() => {this.ruta.navigate(['/dashboard/list']); }, 1000);
+    save() {
+        if (this.formAnswers.valid) {
+          this.action.updateStorage(this.formAnswers.value, this.ID).subscribe(
+            () => {
+              this.dateSave = true;
+              setTimeout(() => {
+                this.ruta.navigate(['/dashboard/list']);
+              }, 1000);
+            },
+            error => {
+              console.error('Error actualizando:', error);
+              this.validated = true;
+              setTimeout(() => { this.validated = false; }, 5000);
             }
-        }else{
-            this.validated = true;
-            setTimeout(() => {this.validated = false; }, 5000);
+          );
+        } else {
+          this.validated = true;
+          setTimeout(() => { this.validated = false; }, 5000);
         }
-    }
+      }
 
   delete(){ this.preguntas.removeAt(this.item); }
 

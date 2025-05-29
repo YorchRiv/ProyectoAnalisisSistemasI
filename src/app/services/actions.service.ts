@@ -40,7 +40,12 @@ export class ActionsService {
         texto: p.pregunta,
         tipo: p.tipo
       }))
-    });
+    }).pipe(
+      catchError(error => {
+        console.error('Error en updateStorage:', error);
+        return throwError(() => new Error('Error al actualizar la encuesta'));
+      })
+    );
   }
 
   setRespuesta(respuesta: any): Observable<any> {

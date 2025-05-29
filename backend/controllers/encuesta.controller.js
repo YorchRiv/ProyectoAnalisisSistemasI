@@ -42,6 +42,12 @@ class EncuestaController {
       const { nombre, preguntas } = req.body;
       const id = req.params.id;
       
+      // Verificar si la encuesta existe
+      const encuestaExistente = await EncuestaModel.obtenerPorId(id);
+      if (!encuestaExistente) {
+        return res.status(404).json({ error: 'Encuesta no encontrada' });
+      }
+      
       // Actualizar la encuesta
       await EncuestaModel.actualizar(id, nombre);
       
@@ -53,9 +59,17 @@ class EncuestaController {
         await PreguntaModel.crear(id, pregunta.texto, pregunta.tipo);
       }
       
-      res.json({ id, mensaje: 'Encuesta actualizada correctamente' });
+      const encuestaActualizada = await EncuestaModel.obtenerPorId(id);
+      const preguntasActualizadas = await PreguntaModel.obtenerPorEncuesta(id);
+      
+      res.json({
+        ...encuestaActualizada,
+        preguntas: preguntasActualizadas,
+        mensaje: 'Encuesta actualizada correctamente'
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.error('Error en actualización:', error);
+      res.status(500).json({ error: 'Error al actualizar la encuesta' });
     }
   }
 
